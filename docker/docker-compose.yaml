@@ -1,0 +1,32 @@
+services:
+  pipeline:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: multi-agent-pipeline:latest
+    container_name: multi-agent-pipeline
+    ports:
+      - "8000:8000"
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    env_file:
+      - ../.env
+    volumes:
+      - ../outputs:/app/outputs
+      - ../logs:/app/logs
+      - ../data:/app/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: multi-agent-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_models:
